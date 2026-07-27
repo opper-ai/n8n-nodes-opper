@@ -1,6 +1,6 @@
 {
 	"name": "@opperai/n8n-nodes-opper",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"description": "n8n community node for Opper — 300+ AI models through one EU-hosted, GDPR-compliant gateway",
 	"keywords": [
 		"n8n-community-node-package",
@@ -27,7 +27,7 @@
 	},
 	"main": "index.js",
 	"scripts": {
-		"build": "rimraf dist && tsc --noEmit && node esbuild.config.js && gulp build:icons",
+		"build": "rimraf dist && tsc && gulp build:icons",
 		"dev": "tsc --watch",
 		"format": "prettier nodes credentials --write",
 		"lint": "eslint nodes credentials package.json",
@@ -39,6 +39,7 @@
 	],
 	"n8n": {
 		"n8nNodesApiVersion": 1,
+		"aiNodeSdkVersion": 1,
 		"credentials": [
 			"dist/credentials/OpperApi.credentials.js"
 		],
@@ -47,10 +48,8 @@
 		]
 	},
 	"devDependencies": {
-		"@langchain/openai": "1.4.4",
-		"@n8n/ai-utilities": "0.24.3",
+		"@n8n/ai-node-sdk": "0.21.3",
 		"@typescript-eslint/parser": "^8.32.0",
-		"esbuild": "^0.28.1",
 		"eslint": "^8.57.0",
 		"eslint-plugin-n8n-nodes-base": "^1.16.3",
 		"gulp": "^5.0.0",
@@ -60,6 +59,7 @@
 		"typescript": "^5.8.2"
 	},
 	"peerDependencies": {
+		"@n8n/ai-node-sdk": "*",
 		"n8n-workflow": "*"
 	}
 }

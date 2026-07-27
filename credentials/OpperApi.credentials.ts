@@ -2,6 +2,7 @@ import type {
 	IAuthenticateGeneric,
 	ICredentialTestRequest,
 	ICredentialType,
+	Icon,
 	INodeProperties,
 } from 'n8n-workflow';
 
@@ -9,6 +10,8 @@ export class OpperApi implements ICredentialType {
 	name = 'opperApi';
 
 	displayName = 'Opper API';
+
+	icon: Icon = { light: 'file:opper.svg', dark: 'file:opper.dark.svg' };
 
 	// eslint-disable-next-line n8n-nodes-base/cred-class-field-documentation-url-miscased
 	documentationUrl = 'https://docs.opper.ai';

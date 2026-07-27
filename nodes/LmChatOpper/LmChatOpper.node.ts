@@ -1,10 +1,4 @@
-import { ChatOpenAI, type ClientOptions } from '@langchain/openai';
-import {
-	getProxyAgent,
-	makeN8nLlmFailedAttemptHandler,
-	N8nLlmTracing,
-	getConnectionHintNoticeField,
-} from '@n8n/ai-utilities';
+import { supplyModel } from '@n8n/ai-node-sdk';
 import {
 	NodeConnectionTypes,
 	type INodeType,
@@ -17,10 +11,11 @@ export class LmChatOpper implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Opper Chat Model',
 		name: 'lmChatOpper',
-		icon: 'file:opper.svg',
+		icon: { light: 'file:opper.svg', dark: 'file:opper.dark.svg' },
 		group: ['transform'],
 		version: [1],
 		description: 'For advanced usage with an AI chain',
+		subtitle: '={{$parameter.model}}',
 		defaults: {
 			name: 'Opper Chat Model',
 		},
@@ -57,7 +52,6 @@ export class LmChatOpper implements INodeType {
 			baseURL: '={{ $credentials?.url }}',
 		},
 		properties: [
-			getConnectionHintNoticeField([NodeConnectionTypes.AiChain, NodeConnectionTypes.AiAgent]),
 			{
 				displayName:
 					'If using JSON response format, you must include the word "json" in the prompt in your chain or agent',
@@ -215,43 +209,29 @@ export class LmChatOpper implements INodeType {
 		const options = this.getNodeParameter('options', itemIndex, {}) as {
 			frequencyPenalty?: number;
 			maxTokens?: number;
-			maxRetries: number;
-			timeout: number;
+			maxRetries?: number;
+			timeout?: number;
 			presencePenalty?: number;
 			temperature?: number;
 			topP?: number;
 			responseFormat?: 'text' | 'json_object';
 		};
 
-		const timeout = options.timeout;
-		const configuration: ClientOptions = {
-			baseURL: credentials.url,
-			fetchOptions: {
-				dispatcher: getProxyAgent(credentials.url, {
-					headersTimeout: timeout,
-					bodyTimeout: timeout,
-				}),
-			},
-		};
-
-		const model = new ChatOpenAI({
+		return supplyModel(this, {
+			type: 'openai',
+			baseUrl: credentials.url,
 			apiKey: credentials.apiKey,
 			model: modelName,
-			...options,
-			timeout,
+			temperature: options.temperature,
+			topP: options.topP,
+			frequencyPenalty: options.frequencyPenalty,
+			presencePenalty: options.presencePenalty,
+			maxTokens: options.maxTokens === -1 ? undefined : options.maxTokens,
+			timeout: options.timeout,
 			maxRetries: options.maxRetries ?? 2,
-			configuration,
-			callbacks: [new N8nLlmTracing(this)],
-			modelKwargs: options.responseFormat
-				? {
-						response_format: { type: options.responseFormat },
-					}
+			additionalParams: options.responseFormat
+				? { response_format: { type: options.responseFormat } }
 				: undefined,
-			onFailedAttempt: makeN8nLlmFailedAttemptHandler(this),
 		});
-
-		return {
-			response: model,
-		};
 	}
 }
