@@ -1,0 +1,66 @@
+{
+	"name": "n8n-nodes-opper",
+	"version": "0.1.0",
+	"description": "n8n community node for Opper — 300+ AI models through one EU-hosted, GDPR-compliant gateway",
+	"keywords": [
+		"n8n-community-node-package",
+		"opper",
+		"ai",
+		"llm",
+		"chat-model",
+		"langchain",
+		"eu",
+		"gdpr"
+	],
+	"license": "MIT",
+	"homepage": "https://opper.ai",
+	"author": {
+		"name": "Opper AI",
+		"email": "support@opper.ai"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/opper-ai/n8n-nodes-opper.git"
+	},
+	"engines": {
+		"node": ">=20.15"
+	},
+	"main": "index.js",
+	"scripts": {
+		"build": "rimraf dist && tsc && gulp build:icons",
+		"dev": "tsc --watch",
+		"format": "prettier nodes credentials --write",
+		"lint": "eslint nodes credentials package.json",
+		"lintfix": "eslint nodes credentials package.json --fix",
+		"prepublishOnly": "npm run build && npm run lint"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"credentials": [
+			"dist/credentials/OpperApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/LmChatOpper/LmChatOpper.node.js"
+		]
+	},
+	"devDependencies": {
+		"@typescript-eslint/parser": "^8.32.0",
+		"eslint": "^8.57.0",
+		"eslint-plugin-n8n-nodes-base": "^1.16.3",
+		"gulp": "^5.0.0",
+		"n8n-workflow": "^2.31.3",
+		"prettier": "^3.5.3",
+		"rimraf": "^6.0.1",
+		"typescript": "^5.8.2"
+	},
+	"dependencies": {
+		"@langchain/openai": "^1.4.4",
+		"@n8n/ai-utilities": "^0.24.3"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
+}
