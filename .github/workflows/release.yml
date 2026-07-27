@@ -1,0 +1,40 @@
+# Publishes to npm with provenance, as required for n8n verified community
+# nodes (n8n fetches the package from npm for final vetting and requires it
+# to be published from a GitHub Actions workflow with provenance).
+#
+# Trigger: publishing a GitHub release whose tag matches the package version
+# (e.g. v0.1.0). Requires the NPM_TOKEN repository secret (an npm automation
+# token with publish rights on n8n-nodes-opper).
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm provenance
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - name: Check tag matches package version
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG="${GITHUB_REF_NAME#v}"
+          if [ "$PKG_VERSION" != "$TAG" ]; then
+            echo "package.json version ($PKG_VERSION) does not match release tag ($GITHUB_REF_NAME)" >&2
+            exit 1
+          fi
+      - run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
