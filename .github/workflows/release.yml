@@ -3,8 +3,9 @@
 # to be published from a GitHub Actions workflow with provenance).
 #
 # Trigger: publishing a GitHub release whose tag matches the package version
-# (e.g. v0.1.0). Requires the NPM_TOKEN repository secret (an npm automation
-# token with publish rights on the @opperai scope).
+# (e.g. v0.1.0). Auth is npm Trusted Publishing (OIDC): the @opperai/
+# n8n-nodes-opper package on npmjs.com trusts this repo's release.yml, so no
+# npm token is needed. Requires npm >= 11.5, hence the npm upgrade step.
 name: Release
 
 on:
@@ -35,6 +36,6 @@ jobs:
             echo "package.json version ($PKG_VERSION) does not match release tag ($GITHUB_REF_NAME)" >&2
             exit 1
           fi
+      - name: Upgrade npm for OIDC trusted publishing
+        run: npm install -g npm@latest
       - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
