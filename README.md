@@ -1,4 +1,4 @@
-# n8n-nodes-opper
+# @opperai/n8n-nodes-opper
 
 This is an n8n community node for [Opper](https://opper.ai) — the AI gateway for agents. It gives your n8n workflows access to 300+ AI models (Anthropic, OpenAI, Google, Mistral, and many more) through one EU-hosted, GDPR-compliant gateway, with unified billing, tracing, and Opper's control plane (Route, Observe, Steer, Guard, Comply).
 
@@ -8,7 +8,7 @@ This is an n8n community node for [Opper](https://opper.ai) — the AI gateway f
 
 Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation:
 
-**Settings → Community Nodes → Install** and enter `n8n-nodes-opper`.
+**Settings → Community Nodes → Install** and enter `@opperai/n8n-nodes-opper`.
 
 ## Nodes
 
@@ -61,7 +61,7 @@ To test locally, link the package into your n8n custom nodes directory:
 npm run build
 npm link
 mkdir -p ~/.n8n/custom && cd ~/.n8n/custom
-npm link n8n-nodes-opper
+npm link @opperai/n8n-nodes-opper
 n8n start
 ```
 

@@ -4,7 +4,7 @@
 #
 # Trigger: publishing a GitHub release whose tag matches the package version
 # (e.g. v0.1.0). Requires the NPM_TOKEN repository secret (an npm automation
-# token with publish rights on n8n-nodes-opper).
+# token with publish rights on the @opperai scope).
 name: Release
 
 on:
