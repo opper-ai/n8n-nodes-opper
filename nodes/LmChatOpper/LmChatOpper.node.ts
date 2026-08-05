@@ -103,12 +103,6 @@ export class LmChatOpper implements INodeType {
 						},
 					},
 				},
-				routing: {
-					send: {
-						type: 'body',
-						property: 'model',
-					},
-				},
 				default: 'anthropic/claude-sonnet-4-6',
 			},
 			{
