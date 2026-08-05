@@ -1,14 +1,28 @@
 # Publishes to npm with provenance, as required for n8n verified community
 # nodes (n8n fetches the package from npm for final vetting and requires it
-# to be published from a GitHub Actions workflow with provenance).
+# to be published from a GitHub Actions workflow with provenance -- a local
+# `npm publish` is not accepted).
 #
-# Trigger: publishing a GitHub release whose tag matches the package version
-# (e.g. v0.1.0). Auth is npm Trusted Publishing (OIDC): the @opperai/
-# n8n-nodes-opper package on npmjs.com trusts this repo's release.yml, so no
-# npm token is needed. Requires npm >= 11.5, hence the npm upgrade step.
+# Triggers:
+#   - push to main: publishes whenever package.json's version is one npm
+#     hasn't seen yet, then tags the commit and cuts the GitHub release. So
+#     the release flow is just "bump the version in the PR, merge it".
+#   - workflow_dispatch: same logic, run by hand from the Actions tab.
+#   - release published: kept so cutting a release by hand still publishes.
+#
+# Every path is idempotent: the job no-ops when the version already exists on
+# npm, so re-running or merging unrelated commits never republishes.
+#
+# Auth is npm Trusted Publishing (OIDC): the @opperai/n8n-nodes-opper package
+# on npmjs.com trusts THIS repo's `release.yml` by filename -- renaming or
+# splitting this file breaks publishing until the trusted publisher is
+# reconfigured on npmjs.com. Requires npm >= 11.5, hence the upgrade step.
 name: Release
 
 on:
+  push:
+    branches: [main]
+  workflow_dispatch:
   release:
     types: [published]
 
@@ -16,7 +30,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write # create the tag + GitHub release
       id-token: write # npm provenance
     steps:
       - uses: actions/checkout@v4
@@ -25,17 +39,44 @@ jobs:
           node-version: 22
           cache: npm
           registry-url: https://registry.npmjs.org
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run build
-      - name: Check tag matches package version
+
+      - name: Check whether this version is already on npm
+        id: check
         run: |
-          PKG_VERSION=$(node -p "require('./package.json').version")
-          TAG="${GITHUB_REF_NAME#v}"
-          if [ "$PKG_VERSION" != "$TAG" ]; then
-            echo "package.json version ($PKG_VERSION) does not match release tag ($GITHUB_REF_NAME)" >&2
-            exit 1
+          VERSION=$(node -p "require('./package.json').version")
+          NAME=$(node -p "require('./package.json').name")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          # `npm view` exits non-zero (E404) when the version doesn't exist.
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "$NAME@$VERSION is already published, nothing to do"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "$NAME@$VERSION is new, will publish"
+            echo "publish=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - run: npm ci
+        if: steps.check.outputs.publish == 'true'
+      - run: npm run lint
+        if: steps.check.outputs.publish == 'true'
+      - run: npm run build
+        if: steps.check.outputs.publish == 'true'
+
       - name: Upgrade npm for OIDC trusted publishing
+        if: steps.check.outputs.publish == 'true'
         run: npm install -g npm@latest
+
       - run: npm publish --provenance --access public
+        if: steps.check.outputs.publish == 'true'
+
+      - name: Tag and create GitHub release
+        if: steps.check.outputs.publish == 'true' && github.event_name != 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: v${{ steps.check.outputs.version }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "release $TAG already exists, skipping"
+          else
+            gh release create "$TAG" --target "$GITHUB_SHA" --title "$TAG" --generate-notes
+          fi
