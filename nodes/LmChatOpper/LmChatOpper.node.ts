@@ -14,7 +14,7 @@ export class LmChatOpper implements INodeType {
 		icon: { light: 'file:opper.svg', dark: 'file:opper.dark.svg' },
 		group: ['transform'],
 		version: [1],
-		description: 'For advanced usage with an AI chain',
+		description: '700+ AI models through one EU-hosted, GDPR-compliant gateway',
 		subtitle: '={{$parameter.model}}',
 		defaults: {
 			name: 'Opper Chat Model',
