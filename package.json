@@ -1,7 +1,7 @@
 {
 	"name": "@opperai/n8n-nodes-opper",
-	"version": "0.2.1",
-	"description": "n8n community node for Opper — 300+ AI models through one EU-hosted, GDPR-compliant gateway",
+	"version": "0.2.2",
+	"description": "n8n community node for Opper — 700+ AI models through one EU-hosted, GDPR-compliant gateway",
 	"keywords": [
 		"n8n-community-node-package",
 		"opper",

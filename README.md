@@ -1,6 +1,6 @@
 # @opperai/n8n-nodes-opper
 
-This is an n8n community node for [Opper](https://opper.ai) — the AI gateway for agents. It gives your n8n workflows access to 300+ AI models (Anthropic, OpenAI, Google, Mistral, and many more) through one EU-hosted, GDPR-compliant gateway, with unified billing, tracing, and Opper's control plane (Route, Observe, Steer, Guard, Comply).
+This is an n8n community node for [Opper](https://opper.ai) — the AI gateway for agents. It gives your n8n workflows access to 700+ AI models (Anthropic, OpenAI, Google, Mistral, and many more) through one EU-hosted, GDPR-compliant gateway, with unified billing, tracing, and Opper's control plane (Route, Observe, Steer, Guard, Comply).
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
@@ -16,7 +16,7 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 A chat-model sub-node, used the same way as the built-in OpenAI / OpenRouter chat model nodes: attach it to an **AI Agent**, **Basic LLM Chain**, or any other node that accepts a language-model connection.
 
-- The model dropdown is loaded live from Opper's catalogue — pick any of 300+ models by their Opper ID (e.g. `anthropic/claude-sonnet-4-6`, `openai/gpt-5-nano`, `mistralai/mistral-large-eu`).
+- The model dropdown is loaded live from Opper's catalogue — pick any of 700+ models by their Opper ID (e.g. `anthropic/claude-sonnet-4-6`, `openai/gpt-5-nano`, `mistralai/mistral-large-eu`).
 - Supports the standard sampling options (temperature, top-p, penalties, max tokens), JSON mode, timeouts, and retries.
 
 ## Credentials
@@ -33,7 +33,7 @@ The credential test calls Opper's OpenAI-compatible `GET /models` endpoint.
 ## Why Opper?
 
 - **EU-hosted, GDPR-compliant**: inference routed and processed in the EU.
-- **One key, 300+ models**: no per-provider accounts or keys.
+- **One key, 700+ models**: no per-provider accounts or keys.
 - **Unified billing and cost tracking** across all providers.
 - **Control plane**: routing, observability/evals, steering, guardrails, and compliance controls on top of every call.
 
